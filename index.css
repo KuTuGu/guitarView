@@ -1,18 +1,22 @@
+/* 全屏 */
 html, body {
   width: 100%;
   height: 100%;
   margin: 0;
 }
+.bodyExpanded {
+  overflow: hidden;
+}
 
+/* 视图 */
 #view {
+  display: flex;
+  align-items: flex-start;
   position: relative;
   left: 0;
   top: 0;
   right: 0;
-  padding-top: 10vh;
   font-size: 0;
-  display: flex;
-  align-items: flex-start;
 }
 #leftView, #rightView {
   width: 50vw;
@@ -20,8 +24,10 @@ html, body {
 .placeholder {
   height: 20vh;
 }
+
+/* 展示图 */
 .good {
-  margin-bottom: 20vh;
+  margin-bottom: 10vh;
   padding: 0 5vw;
   text-align: center;
   /* 清除 inline-block 空白间隙 */
@@ -34,43 +40,74 @@ html, body {
 .good:last-child {
   margin-bottom: 0;
 }
+
+/* 具体展示内容 */
 .good .present {
   position: relative;
   min-height: 180px;
 }
+/* 图片展开前后样式 */
 .good .present .goodPic {
-  position: absolute;
-  left: 5vw;
-  bottom: 5vw;
+  position: relative;
   width: 30vw;
-  z-index: 1;
+  z-index: 3;
 }
 .good .present .goodPicExpanded {
+  position: fixed;
+  right: 0;
+  bottom: 20vh;
   width: 40vw;
   z-index: 30;
 }
+/* 遮罩展开前后样式 */
+.good .present .mask {
+  width: 40vw;
+  height: 40vw;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  background-color: #C8C8C8;
+}
+.good .present .maskExpanded {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  height: 50vh;
+  width: 100vw;
+  z-index: 10;
+}
+.topMask {
+  position: fixed;
+  left: 0;
+  bottom: 50vh;
+  height: 50vh;
+  width: 100vw;
+  opacity: 0;
+  z-index: -1;
+  background-color: white;
+}
+.topMaskExpanded {
+  opacity: 1;
+  z-index: 10;
+}
+/* 描述展开前后样式 */
 .good .intro {
   text-align: left;
   font-size: 12px;
 }
 .good .intro .title {
-  display: block;
   font-size: 16px;
 }
-.good .intro .desc {
-  color: lightgrey;
-}
-.good .intro .detail {
-  font-size: 0;
-  color: lightgrey;
-}
-.good .intro .title-expanded {
+.good .intro .titleExpanded {
   position: fixed;
   top: 45vh;
   left: 5vw;
   z-index: 30;
 }
-.good .intro .desc-expanded {
+.good .intro .desc {
+  color: lightgrey;
+}
+.good .intro .descExpanded {
   position: fixed;
   top: 55vh;
   left: 5vw;
@@ -78,7 +115,11 @@ html, body {
   z-index: 30;
   color: white;
 }
-.good .intro .detail-expanded {
+.good .intro .detail {
+  font-size: 0;
+  color: lightgrey;
+}
+.good .intro .detailExpanded {
   position: fixed;
   top: 60vh;
   left: 5vw;
@@ -92,6 +133,7 @@ html, body {
   word-break: break-all;
 }
 
+/* 切换按钮定位 */
 .switch {
   position: absolute;
   top: 5vw;
@@ -100,39 +142,9 @@ html, body {
   cursor: pointer;
   z-index: 999;
 }
-
-#del {
+.hide {
   opacity: 0;
 }
-
-.animate {
-  transition: all 0.3s ease-in-out;
-}
-
-.introAnimate {
-  transition: all 0.1s ease-in-out;
-}
-
-.mask {
-  width: 40vw;
-  height: 40vw;
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  z-index: -1;
-  background-color: #C8C8C8;
-}
-.topMask {
-  position: fixed;
-  left: 0;
-  bottom: 50vh;
-  width: 0;
-  height: 0;
-  z-index: -10;
-  background-color: white;
-}
-.maskExpanded {
-  z-index: 20;
-  width: 100vw;
-  height: 50vh;
+.show {
+  opacity: 1;
 }
