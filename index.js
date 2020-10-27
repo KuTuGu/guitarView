@@ -61,34 +61,63 @@ function FLIPAnimation(el, lastClass) {
 */
 window.onload = () => {
   let isExpanded = false;
-  let reverseArr = null;
+  let domRef = null;
+  const goodsArr = {};
+  const globalArr = [];
   const goods = document.getElementsByClassName('good');
   const switchOff = document.getElementsByClassName('switch');
   const topMask = document.getElementsByClassName('topMask')[0];
   const transition = 'transform 0.5s ease-in-out';
 
-  Array.from(goods).forEach(dom => {
-    const [ img, mask ] = dom.children[0].children;
-    const [ title, desc, detail ] = dom.children[1].children;
-    const animations = [
-      // 注意可能存在顺序前后影响
-      FLIPAnimation(desc, 'descExpanded'),
-      FLIPAnimation(detail, 'detailExpanded'),
-      FLIPAnimation(title, 'titleExpanded'),
-      FLIPAnimation(mask, 'maskExpanded'),
-      FLIPAnimation(img, 'goodPicExpanded'),
-      FLIPAnimation(topMask, 'topMaskExpanded'),
-      FLIPAnimation(switchOff[0], 'hide'),
-      FLIPAnimation(switchOff[1], 'show')
-    ];
-
+  Array.from(goods).forEach((dom, index) => {
+    dom.id = dom.id || index;
     dom.addEventListener('click', () => {
       if (!isExpanded) {
         isExpanded = true;
-        
-        animations.forEach(animate => animate(transition));
 
-        reverseArr = animations;
+        const [ img, mask ] = dom.children[0].children;
+        const [ title, desc, detail ] = dom.children[1].children;
+
+        // 缓存货物动画函数，只需初始化一次
+        if (!goodsArr[dom.id]) {
+          // 因为存在动画后元素脱离文档流，导致父元素尺寸变化，影响布局。需要先特殊处理
+          const size = dom.getBoundingClientRect();
+          dom.style.width = `${size.width}px`;
+          dom.style.height = `${size.height}px`;
+          
+          // FLIP动画初始化
+          goodsArr[dom.id] = [
+            // 顺序可能影响布局
+            FLIPAnimation(desc, 'descExpanded'),
+            FLIPAnimation(detail, 'detailExpanded'),
+            FLIPAnimation(title, 'titleExpanded'),
+            FLIPAnimation(mask, 'maskExpanded'),
+            FLIPAnimation(img, 'goodPicExpanded')
+          ];
+        }
+
+        // 全局单例，只需实例一次
+        if (!globalArr.length) {
+          globalArr.push(
+            FLIPAnimation(topMask, 'topMaskExpanded'),
+            FLIPAnimation(switchOff[0], 'hide'),
+            FLIPAnimation(switchOff[1], 'show')
+          );
+        }
+
+        // 特殊副作用处理
+        img.style.zIndex = 30;
+        mask.style.zIndex = 10;
+        title.style.zIndex = 30;
+        desc.style.zIndex = 30;
+        detail.style.zIndex = 30;
+        topMask.style.zIndex = 10;
+
+        // FLIP动画
+        goodsArr[dom.id].forEach(animate => animate(transition));
+        globalArr.forEach(animate => animate(transition));
+        
+        domRef = dom;
       }
     })
   })
@@ -97,7 +126,19 @@ window.onload = () => {
     if (isExpanded) {
       isExpanded = false;
       
-      reverseArr.forEach(clearAnimation => clearAnimation(transition));
+      goodsArr[domRef.id].forEach(clearAnimation => clearAnimation(transition));
+      globalArr.forEach(clearAnimation => clearAnimation(transition));
+
+      // 特殊副作用处理
+      const [ img, mask ] = domRef.children[0].children;
+      const [ title, desc, detail ] = domRef.children[1].children;
+
+      img.style.zIndex = 3;
+      mask.style.zIndex = 1;
+      title.style.zIndex = 1;
+      desc.style.zIndex = 1;
+      detail.style.zIndex = 1;
+      topMask.style.zIndex = 1;
     }
   })
 }
